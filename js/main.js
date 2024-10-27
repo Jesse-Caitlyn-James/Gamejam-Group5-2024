@@ -41,8 +41,9 @@ function draw(){
             let corner2x = buttonGroup[i].x + buttonGroup[i].w/2;
             let corner2y = buttonGroup[i].y + buttonGroup[i].h/2;
 
-            new Sprite(corner1x, corner1y, 10, 'pentagon');
-            new Sprite(corner2x, corner2y, 10, 'pentagon');
+            if(mouse.x > corner1x && mouse.x < corner2x && mouse.y > corner1y && mouse.y < corner2y){
+                console.log(buttonGroup[i].gameButton.callback);
+            }
         }
     }
 }
