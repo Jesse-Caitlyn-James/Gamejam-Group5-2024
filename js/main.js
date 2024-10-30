@@ -1,39 +1,35 @@
-/**
- * 
- * @param {*} x X Position
- * @param {*} y Y Position
- * @param {*} w Button Width
- * @param {*} h Button Height
- * @param {*} callback Callback Function for Click Event
-*/    
-class gameButton {
-    constructor(x,y,w,h,text = "",callback = console.log){
-        this.sprite = new buttonGroup.Sprite();
-        this.sprite.x = x;
-        this.sprite.y = y;
-        this.sprite.w = w;
-        this.sprite.h = h;
-        this.sprite.text = text;
-        this.sprite.textSize = (w + h)/4;
-        this.sprite.collider = "none";
-        this.sprite.gameButton = this;
-        this.callback = callback;
-    }
-}
+let buttonGroup;
 
-let buttonGroup
+// Preload Resources
+let imgTarget;
+
+function preload(){
+    imgTarget = loadImage('../Assets/Images/target.png');
+}
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
     buttonGroup = new Group();
-    test = new gameButton(windowWidth/2, windowHeight/2, 100, 100, "butt", drawPent);
+
+    factory = new UnitFactory();
+    idleManager = new IdleManager();
 }
 
 function draw(){
+    clear();
     background(220);
 
-    for(let i = 0; i < buttonGroup.length; i++){
-        if(mouse.presses()){
+    // ToolBar
+    rect(0, windowHeight-99, windowWidth, 100);
+
+    idleManager.idleUpdate();
+
+    buttonCheck();    
+}
+
+function buttonCheck(){
+    if(mouse.presses()){
+        for(let i = 0; i < buttonGroup.length; i++){
             let corner1x = buttonGroup[i].x - buttonGroup[i].w/2;
             let corner1y = buttonGroup[i].y - buttonGroup[i].h/2;
             let corner2x = buttonGroup[i].x + buttonGroup[i].w/2;
@@ -44,8 +40,4 @@ function draw(){
             }
         }
     }
-}
-
-function drawPent(){
-    new Sprite(windowWidth/2, windowHeight/2, 10, 'pentagon');
 }
