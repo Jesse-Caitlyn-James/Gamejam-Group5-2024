@@ -1,5 +1,8 @@
 let buttonGroup;
 
+let darkModeButton;
+let sysColour = 220;
+
 // Preload Resources
 let imgTarget;
 
@@ -13,11 +16,15 @@ function setup(){
 
     factory = new UnitFactory();
     idleManager = new IdleManager();
+    
+    darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
+    darkModeButton.sprite.textSize = 30;
 }
 
 function draw(){
     clear();
-    background(220);
+    background(sysColour);
+    fill(sysColour+50);
 
     // ToolBar
     rect(0, windowHeight-99, windowWidth, 100);
@@ -39,5 +46,15 @@ function buttonCheck(){
                 buttonGroup[i].gameButton.callback();
             }
         }
+    }
+}
+
+function darkModeSwitch(){
+    if (sysColour == 220){
+        sysColour = 10;
+        darkModeButton.sprite.text = "☀";
+    } else {
+        sysColour = 220;
+        darkModeButton.sprite.text = "🌕";
     }
 }
