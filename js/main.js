@@ -1,7 +1,8 @@
 let buttonGroup;
 
 let darkModeButton;
-let sysColour = 220;
+let sysColour = 10;
+let gameSpeed = 30;
 
 // Preload Resources
 let imgTarget;
@@ -27,11 +28,11 @@ function draw(){
     fill(sysColour+50);
 
     // ToolBar
-    rect(0, windowHeight-99, windowWidth, 100);
-
+    
     idleManager.idleUpdate();
-
+    
     buttonCheck();    
+    rect(0, windowHeight-99, windowWidth, 100);
 }
 
 function buttonCheck(){

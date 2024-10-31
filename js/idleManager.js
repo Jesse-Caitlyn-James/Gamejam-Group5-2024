@@ -2,11 +2,13 @@ class IdleManager {
     constructor() {
         this.resourceGroup = new Group();
         this.resourceGathererGroup = new Group();
+        
+        this.base = factory.makeBase();
         this.gatherTarget = this.createTarget();
-
+        
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
         this.gatherSpeed = 30;
-
+        
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
     }
@@ -39,6 +41,7 @@ class IdleManager {
     idleUpdate() {
         // Following is the target and gatherer movement code
         this.moveTarget();
+        this.moveWorld();
 
         for (let i = 0; i < this.resourceGathererGroup.length; i++) {
             this.resourceGathererGroup[i].moveTo(this.gatherTarget, 0.5);
@@ -63,6 +66,24 @@ class IdleManager {
         if (this.gatherTarget.picked) {
             this.gatherTarget.x = mouse.x;
             this.gatherTarget.y = mouse.y;
+        }
+    }
+
+    moveWorld(){
+        if (frameCount % 30 == 0){
+            this.resourceGroup.vel.y = this.base.travelSpeed;
+            this.resourceGathererGroup.vel.y = 0.1;
+        }
+
+        for(let i = 0; i < this.resourceGroup.length; i++){
+            let resource = this.resourceGroup[i];
+            if(resource.y > windowHeight - 100 - resource.h/2){
+                resource.remove();
+            }
+
+            if(resource.overlaps(this.base)){
+                resource.remove();
+            }
         }
     }
 
