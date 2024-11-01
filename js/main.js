@@ -13,6 +13,7 @@ function preload(){
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
+    
     buttonGroup = new Group();
 
     factory = new UnitFactory();
@@ -64,3 +65,5 @@ function darkModeSwitch(){
         darkModeButton.sprite.text = "🌕";
     }
 }
+
+// Look into https://p5js.org/examples/advanced-canvas-rendering-multiple-canvases/ for UI page

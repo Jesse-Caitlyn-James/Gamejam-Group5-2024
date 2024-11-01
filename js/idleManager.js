@@ -8,6 +8,7 @@ class IdleManager {
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
         this.gatherSpeed = 30;
         this.resources = [0];
+        this.resourceLimit = 20;
         
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
@@ -22,7 +23,7 @@ class IdleManager {
     }
 
     checkResources() {
-        if (this.resourceGroup.length < 20) {
+        if (this.resourceGroup.length < this.resourceLimit) {
             this.createResource();
         }
     }
