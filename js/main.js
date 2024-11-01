@@ -33,6 +33,11 @@ function draw(){
     
     buttonCheck();    
     rect(0, windowHeight-99, windowWidth, 100);
+
+    
+    textSize(50);
+    fill(255);
+    text("Resources: " + idleManager.resources[0], 20, 50);
 }
 
 function buttonCheck(){

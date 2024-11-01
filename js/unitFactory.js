@@ -26,6 +26,10 @@ class UnitFactory{
         unit.y = windowHeight/2;
         unit.w = 10;
         unit.h = 10;
+        unit.holdingResource = false;
+        unit.cargo = null;
+        unit.target = null;
+        unit.moveSpeed = 0.1;
     }
 
     makeResources(group){
@@ -41,15 +45,15 @@ class UnitFactory{
         unit.w = 30;
         unit.h = 30;
         unit.collider = "none";
-        unit.health = 20;
+        unit.health = 10;
+        unit.type = 0;
     }
 
     makeBase(){
         let unit = new Sprite();
         unit.x = windowWidth/2;
         unit.y = windowHeight/2;
-        unit.w = 100;
-        unit.h = 100;
+        unit.d = 100;
         unit.collider = "static";
         unit.color = "grey";
         unit.travelSpeed = 0.05;
