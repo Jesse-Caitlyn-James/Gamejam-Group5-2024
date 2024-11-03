@@ -29,7 +29,10 @@ class UnitFactory{
         unit.holdingResource = false;
         unit.cargo = null;
         unit.target = null;
+        unit.oldTarget = null;
         unit.moveSpeed = 0.1;
+        unit.mined = 0;
+        unit.mineEfficiency = 5;
     }
 
     makeResources(group){
@@ -41,7 +44,7 @@ class UnitFactory{
             unit = new Sprite();
         }
         unit.x = random(windowWidth - 30);
-        unit.y = random(windowHeight - 150);
+        unit.y = -20;
         unit.w = 30;
         unit.h = 30;
         unit.collider = "none";
