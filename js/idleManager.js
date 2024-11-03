@@ -56,30 +56,46 @@ class IdleManager {
         for(let i = 0; i < this.resourceGathererGroup.length; i++){
             let gatherer = this.resourceGathererGroup[i];
 
-            if(gatherer.target == null || gatherer.cargo != null){
-                if(gatherer.cargo != null){
-                    gatherer.target = this.base;
-                }else{
-                    gatherer.target = this.resourceGroup[Math.floor(random(this.resourceGroup.length))];
-                    gatherer.oldTarget = gatherer.target;
-                }
-            }
+            this.findTarget(gatherer);
             
             if(gatherer.target == this.base){
                 if(gatherer.collides(this.base)){
                     this.resources[gatherer.cargo]++;
                     gatherer.cargo = null;
                     gatherer.mined = 0;
-                    if (gatherer.oldTarget.health <= 0){
-                        gatherer.target = null;
-                    } else {
-                        gatherer.target = gatherer.oldTarget;
-                    }
                 }
             }
             
+            if (gatherer.oldTarget != null && gatherer.oldTarget.health <= 0){
+                gatherer.target = null;
+                this.findTarget(gatherer);
+            } else {
+                gatherer.target = gatherer.oldTarget;
+            }
+
             gatherer.moveTowards(gatherer.target, 0.01);
             gatherer.rotation = gatherer.direction;
+        }
+    }
+
+    findTarget(gatherer){
+        if(gatherer.target == null || gatherer.cargo != null){
+            if(gatherer.cargo != null){
+                gatherer.target = this.base;
+            }else{
+                let resourceList = [];
+                for (let j = 0; j < this.resourceGroup.length; j++){
+                    if (this.resourceGroup[j].y > 0){
+                        resourceList.push(this.resourceGroup[j]);
+                    }
+                }
+                if (resourceList.length > 0){
+                    gatherer.target = resourceList[Math.floor(random(resourceList.length))];
+                    gatherer.oldTarget = gatherer.target;
+                } else {
+                    // gatherer afk targeting - i dunno how this'll work so ??
+                }
+            }
         }
     }
 
