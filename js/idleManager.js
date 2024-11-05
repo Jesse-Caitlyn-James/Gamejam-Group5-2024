@@ -1,9 +1,13 @@
 class IdleManager {
     constructor() {
+        this.shopManager = new ShopManager();
+        
+        this.idleSprites = new Group();
         this.resourceGroup = new Group();
         this.resourceGathererGroup = new Group();
         
         this.base = factory.makeBase();
+        this.idleSprites.push(this.base);
         
         this.startUp = false;
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
@@ -14,15 +18,16 @@ class IdleManager {
         
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
-
     }
     
     createResourceGatherer() {
-        factory.makeUnit("gatherer", idleManager.resourceGathererGroup);
+        let unit = factory.makeUnit("gatherer", idleManager.resourceGathererGroup);
+        idleManager.idleSprites.push(unit);
     }
     
     createResource() {
-        factory.makeUnit("resource", idleManager.resourceGroup);
+        let unit = factory.makeUnit("resource", idleManager.resourceGroup);
+        this.idleSprites.push(unit);
     }
     
     checkResources() {
@@ -39,7 +44,6 @@ class IdleManager {
                 this.createResource();
             }
         }
-        // Spawn logic here
     }
 
     idleUpdate() {
@@ -50,6 +54,8 @@ class IdleManager {
         // Following is the resource creation and handling code
         this.checkResources();
         this.harvestResources();
+
+        this.shopManager.shopUpdate();
     }
 
     moveGatherers() {
@@ -135,6 +141,7 @@ class IdleManager {
                     if (gatherDist < resource.w + 20 && gatherer.target == resource) {
                         
                         let laser = new Sprite([[gatherer.x, gatherer.y], [random(resource.x-10, resource.x+10), random(resource.y-10, resource.y+10)]]);
+                        this.idleSprites.push(laser);
                         laser.overlaps(allSprites);
                         laser.life = 10;
                         
@@ -162,6 +169,7 @@ class IdleManager {
                     resource.health--;
 
                     let laser = new Sprite([[this.base.x, this.base.y], [random(mouse.x-10, mouse.x+10), random(mouse.y-10, mouse.y+10)]]);
+                    this.idleSprites.push(laser);
                     laser.overlaps(allSprites);
                     laser.life = 10;
 

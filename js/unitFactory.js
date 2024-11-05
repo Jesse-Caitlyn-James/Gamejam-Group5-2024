@@ -4,13 +4,15 @@ class UnitFactory{
     }
     
     makeUnit(type, group = null){
+        let unit;
+        
         switch(type){
             case "gatherer":
-                this.makeGatherer(group);
-                break;
+                unit = this.makeGatherer(group);
+                return unit;
             case "resource":
-                this.makeResources(group);
-                break;
+                unit = this.makeResources(group);
+                return unit;
             }
     }
     
@@ -33,6 +35,7 @@ class UnitFactory{
         unit.moveSpeed = 0.1;
         unit.mined = 0;
         unit.mineEfficiency = 5;
+        return unit;
     }
 
     makeResources(group){
@@ -50,6 +53,7 @@ class UnitFactory{
         unit.collider = "none";
         unit.health = 10;
         unit.type = 0;
+        return unit;
     }
 
     makeBase(){

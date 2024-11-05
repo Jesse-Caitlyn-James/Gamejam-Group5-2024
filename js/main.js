@@ -1,8 +1,15 @@
+let factory;
+let idleManager;
+let menuManager;
+
 let buttonGroup;
 
 let darkModeButton;
+let gameStateButton;
+
 let sysColour = 10;
 let gameSpeed = 30;
+let gameState = 1;
 
 // Preload Resources
 let imgTarget;
@@ -18,9 +25,11 @@ function setup(){
 
     factory = new UnitFactory();
     idleManager = new IdleManager();
+    menuManager = new MenuManager();
     
     darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
     darkModeButton.sprite.textSize = 30;
+    gameStateButton = new GameButton(windowWidth - 100, windowHeight - 50, 40, 40, gameState, gameStateSwitch);
 }
 
 function draw(){
@@ -28,9 +37,23 @@ function draw(){
     background(sysColour);
     fill(sysColour+50);
 
-    // ToolBar
-    
+    // *REMEMBER* We are making an idle game, this should be called NO-MATTER what - probably
     idleManager.idleUpdate();
+    
+    switch (gameState){
+        case 0:
+            menuManager.menuUpdate(sysColour);
+            menuManager.menuSprites.visible = true;
+            idleManager.idleSprites.visible = false;
+            idleManager.idleSprites.overlaps(allSprites);
+
+            break;
+        case 1:
+            idleManager.idleSprites.visible = true;
+            menuManager.menuSprites.visible = false;
+            menuManager.menuSprites.overlaps(allSprites);
+            break;
+        }
     
     buttonCheck();    
     rect(0, windowHeight-99, windowWidth, 100);
@@ -66,4 +89,14 @@ function darkModeSwitch(){
     }
 }
 
+function gameStateSwitch(){
+    if (gameState == 1){
+        gameState = 0;
+        gameStateButton.sprite.text = "0";
+        menuManager.pageState = 0;
+    } else {
+        gameState = 1;
+        gameStateButton.sprite.text = "1";
+    }
+}
 // Look into https://p5js.org/examples/advanced-canvas-rendering-multiple-canvases/ for UI page
