@@ -5,27 +5,41 @@ class IdleManager {
         
         this.base = factory.makeBase();
         
+        this.startUp = false;
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
         this.gatherSpeed = 30;
         this.resources = [0];
         this.resourceLimit = 20;
+        this.spawnRate = 300;
         
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
-    }
 
+    }
+    
     createResourceGatherer() {
         factory.makeUnit("gatherer", idleManager.resourceGathererGroup);
     }
-
+    
     createResource() {
         factory.makeUnit("resource", idleManager.resourceGroup);
     }
-
+    
     checkResources() {
-        if (this.resourceGroup.length < this.resourceLimit) {
-            this.createResource();
+        if(!this.startUp){
+            this.startUp = true;
+            for (let i = 0; i < this.resourceLimit; i++) {
+                this.createResource();
+                this.resourceGroup[i].y = random(windowHeight - 150);
+            }
         }
+
+        if (this.resourceGroup.length < this.resourceLimit){
+            if (frameCount % this.spawnRate == 0){
+                this.createResource();
+            }
+        }
+        // Spawn logic here
     }
 
     idleUpdate() {
@@ -42,24 +56,46 @@ class IdleManager {
         for(let i = 0; i < this.resourceGathererGroup.length; i++){
             let gatherer = this.resourceGathererGroup[i];
 
-            if(gatherer.target == null || gatherer.cargo != null){
-                if(gatherer.cargo != null){
-                    gatherer.target = this.base;
-                }else{
-                    gatherer.target = this.resourceGroup[Math.floor(random(this.resourceGroup.length))];
-                }
-            }
+            this.findTarget(gatherer);
             
             if(gatherer.target == this.base){
                 if(gatherer.collides(this.base)){
                     this.resources[gatherer.cargo]++;
                     gatherer.cargo = null;
-                    gatherer.target = null;
+                    gatherer.mined = 0;
                 }
             }
             
+            if (gatherer.oldTarget != null && gatherer.oldTarget.health <= 0){
+                gatherer.target = null;
+                this.findTarget(gatherer);
+            } else {
+                gatherer.target = gatherer.oldTarget;
+            }
+
             gatherer.moveTowards(gatherer.target, 0.01);
             gatherer.rotation = gatherer.direction;
+        }
+    }
+
+    findTarget(gatherer){
+        if(gatherer.target == null || gatherer.cargo != null){
+            if(gatherer.cargo != null){
+                gatherer.target = this.base;
+            }else{
+                let resourceList = [];
+                for (let j = 0; j < this.resourceGroup.length; j++){
+                    if (this.resourceGroup[j].y > 0){
+                        resourceList.push(this.resourceGroup[j]);
+                    }
+                }
+                if (resourceList.length > 0){
+                    gatherer.target = resourceList[Math.floor(random(resourceList.length))];
+                    gatherer.oldTarget = gatherer.target;
+                } else {
+                    // gatherer afk targeting - i dunno how this'll work so ??
+                }
+            }
         }
     }
 
@@ -102,8 +138,12 @@ class IdleManager {
                         laser.overlaps(allSprites);
                         laser.life = 10;
                         
-                        gatherer.cargo = resource.type;
                         resource.health--;
+                        gatherer.mined++;
+                        
+                        if (gatherer.mined >= gatherer.mineEfficiency){
+                            gatherer.cargo = resource.type;
+                        }
 
                         if (resource.health == 0) {
                             resource.life = 0;
