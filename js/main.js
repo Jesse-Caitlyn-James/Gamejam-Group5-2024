@@ -1,6 +1,7 @@
 let factory;
 let idleManager;
 let menuManager;
+let battleManager = null;
 
 let buttonGroup;
 
@@ -9,7 +10,7 @@ let gameStateButton;
 
 let sysColour = 10;
 let gameSpeed = 30;
-let gameState = 1;
+let gameState = 2;
 
 // Preload Resources
 let imgTarget;
@@ -26,6 +27,7 @@ function setup(){
     factory = new UnitFactory();
     idleManager = new IdleManager();
     menuManager = new MenuManager();
+    
     
     darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
     darkModeButton.sprite.textSize = 30;
@@ -47,11 +49,34 @@ function draw(){
             idleManager.idleSprites.visible = false;
             idleManager.idleSprites.overlaps(allSprites);
 
+            if (battleManager != null){
+                battleManager.battleSprites.remove();
+            }
+            battleManager = null;
             break;
         case 1:
             idleManager.idleSprites.visible = true;
             menuManager.menuSprites.visible = false;
             menuManager.menuSprites.overlaps(allSprites);
+            
+            if (battleManager != null){
+                battleManager.battleSprites.remove();
+            }
+            battleManager = null;
+            break;
+        case 2:
+            // We could just rebuild the whole battle class on every event
+            if (battleManager == null){
+                battleManager = new BattleManager();
+            }
+
+            battleManager.battleUpdate(sysColour);
+            battleManager.battleSprites.visible = true;
+
+            menuManager.menuSprites.visible = false;
+            menuManager.menuSprites.overlaps(allSprites);
+            idleManager.idleSprites.visible = false;
+            idleManager.idleSprites.overlaps(allSprites);
             break;
         }
     
@@ -90,13 +115,14 @@ function darkModeSwitch(){
 }
 
 function gameStateSwitch(){
-    if (gameState == 1){
+    gameState++;
+    
+    // Change the > #num to add more pages - yes, jank, i know
+    if (gameState > 2){
         gameState = 0;
-        gameStateButton.sprite.text = "0";
-        menuManager.pageState = 0;
-    } else {
-        gameState = 1;
-        gameStateButton.sprite.text = "1";
     }
+
+    gameStateButton.sprite.text = gameState;
+    menuManager.pageState = 0;
 }
 // Look into https://p5js.org/examples/advanced-canvas-rendering-multiple-canvases/ for UI page
