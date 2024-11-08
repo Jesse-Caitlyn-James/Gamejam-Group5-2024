@@ -12,7 +12,7 @@ class IdleManager {
         this.startUp = false;
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
         this.gatherSpeed = 30;
-        this.resources = [0];
+        this.resources = [0, 0];
         this.resourceLimit = 20;
         this.spawnRate = 300;
         
