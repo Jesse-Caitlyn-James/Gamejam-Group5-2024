@@ -58,6 +58,7 @@ function draw(){
             idleManager.idleSprites.visible = true;
             menuManager.menuSprites.visible = false;
             menuManager.menuSprites.overlaps(allSprites);
+            idleManager.upgradeManager.draw()
             
             if (battleManager != null){
                 battleManager.battleSprites.remove();

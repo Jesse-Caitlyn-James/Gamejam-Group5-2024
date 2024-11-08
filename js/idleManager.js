@@ -18,6 +18,7 @@ class IdleManager {
         
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
+        this.upgradeManager = new UpgradeManager(upgrades)
     }
     
     createResourceGatherer() {
@@ -182,3 +183,53 @@ class IdleManager {
         }
     }
 }
+
+class UpgradeManager {
+    constructor(upgrades){
+        this.upgrades = upgrades
+        this.state = 0
+        this.openBtn = new GameButton(320, windowHeight - 50, 200, 80, "Upgrades", () => {
+            if(this.state >= 1){
+                this.state = 0
+            } else this.state = 1
+        })
+    }
+
+    draw(){
+        switch (this.state) {
+            case 0:
+                break;
+            case 1:
+                this.drawBaseWindow()
+                this.drawUpgradeList()
+                break;
+        }
+    }
+
+    drawBaseWindow(){
+        fill(255,255,255, 180)
+        rect(0, windowHeight - 200, windowWidth, 100)
+    }
+
+    drawUpgradeList(){
+        let btnW = 150
+        let btnH = 50
+        let x = 50
+        let y = windowHeight - 175
+
+        for(let i of this.upgrades){
+            fill(100, 100, 100)
+            rect(x, y, btnW, btnH)
+            fill(255, 255, 255)
+            textSize(32)
+            text(i.name,x,y)
+            x += btnW + 50
+        }
+        fill(sysColour+50)
+    }
+}
+
+upgrades = [
+    {name: "collect speed", desc: "Increases unit gathering speed", callback: function(){}},
+    {name: "unit speed", desc: "Increases unit movespeed speed", callback: function(){}},
+]
