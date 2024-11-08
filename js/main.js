@@ -13,10 +13,10 @@ let gameSpeed = 30;
 let gameState = 2;
 
 // Preload Resources
-let imgTarget;
+
 
 function preload(){
-    imgTarget = loadImage('../Assets/Images/target.png');
+    
 }
 
 function setup(){
@@ -87,6 +87,7 @@ function draw(){
     textSize(50);
     fill(255);
     text("Resources: " + idleManager.resources[0], 20, 50);
+    text("CoolBucks: " + idleManager.resources[1], 400, 50);
 }
 
 function buttonCheck(){

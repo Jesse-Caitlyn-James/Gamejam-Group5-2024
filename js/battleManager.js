@@ -2,6 +2,7 @@ class BattleManager{
     constructor(){
         this.battleSprites = new Group();
         this.battleSprites.collider = "none";
+        this.projectiles = new Group();
         this.playerSpawn = new this.battleSprites.Sprite(25, windowHeight * 0.2, 50, 50);
         this.playerSpawn.team = "player";
         this.playerSpawn.cash = 100;
@@ -20,6 +21,8 @@ class BattleManager{
         this.unit1Button.x = 100;
         this.unit1Button.w = 100;
         this.unit1Button.text = "Unit1: 10";
+        this.unit1Button.textSize = 20;
+        this.unit1Button.collider = "none";
         this.battleSprites.push(this.unit1Button);
 
         this.unit2Button = new this.buttonGroup.Sprite();
@@ -27,6 +30,8 @@ class BattleManager{
         this.unit2Button.x = 250;
         this.unit2Button.w = 100;
         this.unit2Button.text = "Unit2: 25";
+        this.unit2Button.textSize = 20;
+        this.unit2Button.collider = "none";
         this.battleSprites.push(this.unit2Button);
 
         this.unit3Button = new this.buttonGroup.Sprite();
@@ -34,6 +39,8 @@ class BattleManager{
         this.unit3Button.x = 400;
         this.unit3Button.w = 100;
         this.unit3Button.text = "Unit3: 50";
+        this.unit3Button.textSize = 20;
+        this.unit3Button.collider = "none";
         this.battleSprites.push(this.unit3Button);
     }
 
@@ -42,8 +49,16 @@ class BattleManager{
         rect(0, windowHeight * 0.35, windowWidth, windowHeight * 0.05);
         text("$" + this.playerSpawn.cash, 0, windowHeight * 0.35);
 
+        if(frameCount % 60 == 0){
+            this.playerSpawn.cash++;
+            this.enemySpawn.cash++;
+        }
+
         this.spriteLogic();
-        this.enemyLogic();
+        this.projectileHandling();
+        if(frameCount % 30 == 0){
+            this.enemyLogic();
+        }
 
         this.buttonCheck();
     }
@@ -70,7 +85,7 @@ class BattleManager{
 
                 if(unit.target != null){
                     if(unit.target.health > 0){
-                        if(frameCount % unit.cooldown == 0){
+                        if(frameCount % unit.cooldown == 0 && unit.target == otherUnit){
                             this.createProjectile(unit, otherUnit);
                             unit.vel.x = 0;
                             unit.vel.y = 0;
@@ -90,13 +105,76 @@ class BattleManager{
             }
             
             if(unit.health <= 0){
+                if(unit.team == "player"){
+                    this.enemySpawn.cash += 5;
+                } else {
+                    this.playerSpawn.cash += 5;
+                }
+
+                if(unit == this.playerSpawn){
+                    gameState = 1;
+                    gameStateButton.sprite.text = gameState;
+                }
+
+                if(unit == this.enemySpawn){
+                    idleManager.resources[1] += 100;
+                    gameState = 1;
+                    gameStateButton.sprite.text = gameState;
+                }
+
                 unit.remove();
             }
         }
     }
 
     enemyLogic(){
+        let enemy1 = 0;
+        let enemy2 = 0;
+        let enemy3 = 0;
+        for(let i = 0; i < this.battleSprites.length; i++){
+            let unit = this.battleSprites[i];
+            if(unit.team == "enemy"){
+                switch(unit.range){
+                    case 75:
+                        enemy1++;
+                        break;
+                    case 200:
+                        enemy2++;
+                        break;
+                    case 100:
+                        enemy3++;
+                        break;
+                }
+            }
+        }
 
+        if(enemy1 < 3){
+            this.spawnUnit1("enemy");
+        } else if(enemy2 < 2) {
+            this.spawnUnit2("enemy");
+        } else if(enemy1 < 6) {
+            this.spawnUnit1("enemy");
+        } else {
+            this.spawnUnit3("enemy");
+        }
+    }
+
+    projectileHandling(){
+        this.projectiles.overlaps(this.projectiles);
+        for(let i = 0; i < this.projectiles.length; i++){
+            let projectile = this.projectiles[i];
+            for(let j = 0; j < this.battleSprites.length; j++){
+                let unit = this.battleSprites[j];
+                if(unit.callback != undefined || unit.team == projectile.team){
+                    continue;
+                }
+
+                if(projectile.overlaps(unit)){
+                    unit.health -= projectile.damage;
+                    projectile.remove();
+                }
+            }
+        }
     }
 
     // Generic
@@ -115,8 +193,13 @@ class BattleManager{
             }
         }
         let y = random(windowHeight * 0.1, windowHeight * 0.3);
-        let unit = new battleManager.battleSprites.Sprite(battleManager.playerSpawn.x, y, 25);
-        unit.range = 50;
+        let unit ;
+        if(team == "player"){
+        unit = new battleManager.battleSprites.Sprite(battleManager.playerSpawn.x, y, 25);
+        } else {
+            unit = new battleManager.battleSprites.Sprite(battleManager.enemySpawn.x, y, 25);
+        }
+        unit.range = 75;
         unit.team = team;
         unit.moveSpeed = 0.3;
         unit.health = 25;
@@ -141,7 +224,12 @@ class BattleManager{
             }
         }
         let y = random(windowHeight * 0.1, windowHeight * 0.3);
-        let unit = new battleManager.battleSprites.Sprite(battleManager.playerSpawn.x, y, 10);
+        let unit ;
+        if(team == "player"){
+            unit = new battleManager.battleSprites.Sprite(battleManager.playerSpawn.x, y, 10);
+        } else {
+            unit = new battleManager.battleSprites.Sprite(battleManager.enemySpawn.x, y, 10);
+        }
         unit.range = 200;
         unit.team = team;
         unit.moveSpeed = 0.5;
@@ -167,7 +255,12 @@ class BattleManager{
             }
         }
         let y = random(windowHeight * 0.1, windowHeight * 0.3);
-        let unit = new battleManager.battleSprites.Sprite(battleManager.playerSpawn.x, y, 40);
+        let unit ;
+        if(team == "player"){
+            unit = new battleManager.battleSprites.Sprite(battleManager.playerSpawn.x, y, 50);
+        } else {
+            unit = new battleManager.battleSprites.Sprite(battleManager.enemySpawn.x, y, 50);
+        }
         unit.range = 100;
         unit.team = team;
         unit.moveSpeed = 0.1;
@@ -178,7 +271,13 @@ class BattleManager{
     }
 
     createProjectile(parent, target){
-
+        let projectile = new this.projectiles.Sprite(parent.x, parent.y);
+        projectile.d = 5;
+        projectile.life = 60;
+        projectile.damage = parent.damage;
+        projectile.team = parent.team;
+        projectile.moveTowards(target.x + random(), target.y, 0.1);
+        projectile.rotation = projectile.direction;
     }
 
     buttonCheck(){
