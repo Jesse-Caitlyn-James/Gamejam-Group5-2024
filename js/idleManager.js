@@ -117,8 +117,6 @@ class IdleManager {
                 if (resourceList.length > 0) {
                     gatherer.target = resourceList[Math.floor(random(resourceList.length))];
                     gatherer.oldTarget = gatherer.target;
-                } else {
-                    // gatherer afk targeting - i dunno how this'll work so ??
                 }
             }
         }

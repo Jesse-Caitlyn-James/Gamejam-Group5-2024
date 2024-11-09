@@ -3,14 +3,20 @@ class BattleManager{
         this.battleSprites = new Group();
         this.battleSprites.collider = "none";
         this.projectiles = new Group();
+
         this.playerSpawn = new this.battleSprites.Sprite(25, windowHeight * 0.2, 50, 50);
         this.playerSpawn.team = "player";
         this.playerSpawn.cash = 100;
         this.playerSpawn.health = 100;
+        this.playerSpawn.image = baseImg;
+        this.playerSpawn.scale = 3;
+
         this.enemySpawn = new this.battleSprites.Sprite(windowWidth - 25, windowHeight * 0.2, 50, 50);
         this.enemySpawn.team = "enemy";
         this.enemySpawn.cash = 100;
         this.enemySpawn.health = 100;
+        this.enemySpawn.image = enemyImg;
+        this.enemySpawn.scale = 3;
 
         this.buttonGroup = new Group();
         this.buttonGroup.y = windowHeight * 0.375;
@@ -47,7 +53,7 @@ class BattleManager{
     battleUpdate(){
         rect(0, windowHeight * 0.1, windowWidth, windowHeight * 0.2);
         rect(0, windowHeight * 0.35, windowWidth, windowHeight * 0.05);
-        text("$" + this.playerSpawn.cash, 0, windowHeight * 0.33);
+        text("$" + this.playerSpawn.cash, 0, windowHeight * 0.32);
 
         if(frameCount % 60 == 0){
             this.playerSpawn.cash++;
@@ -97,9 +103,12 @@ class BattleManager{
                     // Movement logic, will need a check in them for if enemy is in range
                     if(unit.team == "player" && unit != this.playerSpawn){
                         unit.moveTo(this.enemySpawn, unit.moveSpeed);
+                        unit.rotation = unit.direction + 90;
+
                     }
                     if(unit.team == "enemy" && unit != this.enemySpawn){
                         unit.moveTo(this.playerSpawn, unit.moveSpeed);
+                        unit.rotation = unit.direction + 90;
                     }
                 }
             }
@@ -206,6 +215,8 @@ class BattleManager{
         unit.damage = 5;
         unit.cooldown = 90;
         unit.target = null;
+        unit.image = gathererImg;
+        unit.scale = 2;
     }
 
     // Ranged
@@ -237,6 +248,8 @@ class BattleManager{
         unit.damage = 15;
         unit.cooldown = 180;
         unit.target = null;
+        unit.image = gathererImg;
+        unit.scale = 1.5;
     }
 
     // Tank
@@ -268,6 +281,8 @@ class BattleManager{
         unit.damage = 10;
         unit.cooldown = 120;
         unit.target = null;
+        unit.image = gathererImg;
+        unit.scale = 3;
     }
 
     createProjectile(parent, target){
