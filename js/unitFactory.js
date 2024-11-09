@@ -41,7 +41,7 @@ class UnitFactory{
         return unit;
     }
 
-    makeResources(group){
+    makeResources(group, health){
         let unit;
         if (group != null){
             unit = new group.Sprite();
@@ -57,7 +57,7 @@ class UnitFactory{
         unit.h = 10;
         unit.scale = 5;
         unit.collider = "none";
-        unit.health = 10;
+        unit.health = health;
         unit.type = 0;
         unit.debug = true;
         return unit;

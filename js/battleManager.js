@@ -47,7 +47,7 @@ class BattleManager{
     battleUpdate(){
         rect(0, windowHeight * 0.1, windowWidth, windowHeight * 0.2);
         rect(0, windowHeight * 0.35, windowWidth, windowHeight * 0.05);
-        text("$" + this.playerSpawn.cash, 0, windowHeight * 0.35);
+        text("$" + this.playerSpawn.cash, 0, windowHeight * 0.33);
 
         if(frameCount % 60 == 0){
             this.playerSpawn.cash++;
@@ -112,14 +112,14 @@ class BattleManager{
                 }
 
                 if(unit == this.playerSpawn){
-                    gameState = 1;
-                    gameStateButton.sprite.text = gameState;
+                    gameState = 0;
+                    gameStateButton.sprite.text = "Battle";
                 }
 
                 if(unit == this.enemySpawn){
                     idleManager.resources[1] += 100;
-                    gameState = 1;
-                    gameStateButton.sprite.text = gameState;
+                    gameState = 0;
+                    gameStateButton.sprite.text = "Battle";
                 }
 
                 unit.remove();

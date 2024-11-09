@@ -23,7 +23,7 @@ function setup(){
     
     darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
     darkModeButton.sprite.textSize = 30;
-    gameStateButton = new GameButton(windowWidth - 100, windowHeight - 50, 40, 40, gameState, gameStateSwitch);
+    gameStateButton = new GameButton(530, windowHeight - 50, 200, 80, "Battle", gameStateSwitch);
 }
 
 function draw(){
@@ -63,8 +63,8 @@ function draw(){
     
     textSize(50);
     fill(255);
-    text("Resources: " + idleManager.resources[0], 20, 50);
-    text("CoolBucks: " + idleManager.resources[1], 400, 50);
+    text("Minerals: " + idleManager.resources[0], 20, 50);
+    text("Oil: " + idleManager.resources[1], 400, 50);
 }
 
 function buttonCheck(){
@@ -100,5 +100,13 @@ function gameStateSwitch(){
         gameState = 0;
     }
 
-    gameStateButton.sprite.text = gameState;
+    switch (gameState){
+        case 0:
+            gameStateButton.sprite.text = "Battle";
+            break;
+        case 1:
+            gameStateButton.sprite.text = "Surrender";
+            break;
+    }
+
 }

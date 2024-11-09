@@ -12,25 +12,38 @@ class IdleManager {
         this.startUp = false;
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
         this.gatherSpeed = 30;
-        this.resources = [0, 0];
+        this.unitSpeed = 0.01;
         this.resourceLimit = 20;
+        this.resourceHealth = 10;
+
+        this.resources = [10, 0];
         this.spawnRate = 300;
+
+        this.gathererCost = 0;
+        this.upgradeCosts = [10, 10, 10, 10, 10];
 
         this.bgPos = -100;
         this.bgImg = loadImage("../Assets/Images/groundtexture100x100.png");
 
         // UI buttons gettin made
-        this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
+        this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer: OIL$" + this.gathererCost, this.createResourceGatherer);
+        this.gathererButton.sprite.textSize = 20;
         this.upgradeManager = new UpgradeManager(upgrades)
     }
 
     createResourceGatherer() {
-        let unit = factory.makeUnit("gatherer", idleManager.resourceGathererGroup);
-        idleManager.idleSprites.push(unit);
+        if (idleManager.resources[1] >= idleManager.gathererCost) {
+            idleManager.resources[1] -= idleManager.gathererCost;
+            let unit = factory.makeUnit("gatherer", idleManager.resourceGathererGroup);
+            idleManager.idleSprites.push(unit);
+            idleManager.gathererCost += 10;
+            idleManager.gathererButton.sprite.text = "Gatherer: OIL$" + idleManager.gathererCost;
+        }
     }
 
     createResource() {
         let unit = factory.makeUnit("resource", idleManager.resourceGroup);
+        unit.health = this.resourceHealth;
         this.idleSprites.push(unit);
     }
 
@@ -85,7 +98,7 @@ class IdleManager {
                 gatherer.target = gatherer.oldTarget;
             }
 
-            gatherer.moveTowards(gatherer.target, 0.01);
+            gatherer.moveTowards(gatherer.target, this.unitSpeed);
             gatherer.rotation = gatherer.direction + 90;
         }
     }
@@ -179,8 +192,10 @@ class IdleManager {
                     laser.overlaps(allSprites);
                     laser.life = 10;
 
-                    if (resource.health == 0) {
+                    if (resource.health % 5 == 0) {
                         this.resources[resource.type]++;
+                    }
+                    if (resource.health == 0){
                         resource.remove();
                     }
                 }
@@ -196,21 +211,78 @@ class IdleManager {
         }
 
         this.bgPos += this.base.travelSpeed;
-        if(this.bgPos >= 0){
+        if (this.bgPos >= 0) {
             this.bgPos = -50;
+        }
+    }
+
+    unitUpgrade(type) {
+        switch (type) {
+            case 0:
+                if (this.upgradeCosts[0] <= this.resources[0]) {
+                    this.resources[0] -= this.upgradeCosts[0];
+                    this.upgradeCosts[0] += 10;
+                    this.upgradeManager.buttonGroup[0].cost = this.upgradeCosts[0];
+                    if (this.gatherSpeed > 0) {
+                        this.gatherSpeed--;
+                    }
+                }
+                break;
+            case 1:
+                if (this.upgradeCosts[1] <= this.resources[0]) {
+                    this.resources[0] -= this.upgradeCosts[1];
+                    this.upgradeCosts[1] += 10;
+                    this.upgradeManager.buttonGroup[1].cost = this.upgradeCosts[1];
+                    this.unitSpeed += 0.001;
+                }
+                break;
+            case 2:
+                if (this.upgradeCosts[2] <= this.resources[0]) {
+                    this.resources[0] -= this.upgradeCosts[2];
+                    this.upgradeCosts[2] += 10;
+                    this.upgradeManager.buttonGroup[2].cost = this.upgradeCosts[2];
+                    this.base.travelSpeed += 0.005;
+                    if(this.spawnRate > 0){
+                        this.spawnRate -= 5;
+                    }
+                }
+                break;
+            case 3:
+                if (this.upgradeCosts[3] <= this.resources[0]) {
+                    this.resources[0] -= this.upgradeCosts[3];
+                    this.upgradeCosts[3] += 10;
+                    this.upgradeManager.buttonGroup[3].cost = this.upgradeCosts[3];
+                    this.resourceLimit++;
+                }
+                break;
+            case 4:
+                if (this.upgradeCosts[4] <= this.resources[0]) {
+                    this.resources[0] -= this.upgradeCosts[4];
+                    this.upgradeCosts[4] += 10;
+                    this.upgradeManager.buttonGroup[4].cost = this.upgradeCosts[4];
+                    this.resourceHealth += 5;
+                }
+                break;
+
         }
     }
 }
 
 class UpgradeManager {
     constructor(upgrades) {
-        this.upgrades = upgrades
-        this.state = 0
+        this.upgrades = upgrades;
+        this.buttonGroup = new Group();
+        this.state = 0;
         this.openBtn = new GameButton(320, windowHeight - 50, 200, 80, "Upgrades", () => {
             if (this.state >= 1) {
-                this.state = 0
-            } else this.state = 1
+                this.state = 0;
+                this.buttonGroup.visible = false;
+            } else {
+                this.state = 1;
+                this.buttonGroup.visible = true;
+            }
         })
+        this.drawUpgradeList()
     }
 
     draw() {
@@ -219,8 +291,12 @@ class UpgradeManager {
                 break;
             case 1:
                 this.drawBaseWindow()
-                this.drawUpgradeList()
                 break;
+        }
+
+        for (let i = 0; i < this.buttonGroup.length; i++) {
+            let btn = this.buttonGroup[i];
+            btn.text = this.upgrades[i].name + " Min$" + btn.cost;
         }
     }
 
@@ -232,25 +308,26 @@ class UpgradeManager {
     drawUpgradeList() {
         let btnW = 150
         let btnH = 50
-        let x = 50
-        let y = windowHeight - 175
+        let x = -100;
+        let y = windowHeight - 150
         textAlign(LEFT, TOP);
 
-        for (let i of this.upgrades) {
-            fill(100, 100, 100)
-            rect(x, y, btnW, btnH)
-            fill(255, 255, 255)
-            textSize(25)
-            text(i.name, x, y)
-            x += btnW + 50
+        for (let i = 0; i < this.upgrades.length; i++) {
+            let btn = new GameButton(x += btnW + 50, y, btnW, btnH, this.upgrades[i].name + " Min$10", this.upgrades[i].callback);
+            btn.sprite.cost = 10;
+            btn.sprite.fill = 200;
+            btn.sprite.textSize = 15;
+            btn.sprite.visible = false;
+            this.buttonGroup.push(btn.sprite);
         }
         fill(sysColour + 50)
     }
-
-
 }
 
 upgrades = [
-    { name: "collect speed", desc: "Increases unit gathering speed", callback: function () { } },
-    { name: "unit speed", desc: "Increases unit movespeed speed", callback: function () { } },
+    { name: "Collect Speed", desc: "Increases unit gathering speed", callback: function () { idleManager.unitUpgrade(0) } },
+    { name: "Unit Speed", desc: "Increases unit movespeed speed", callback: function () { idleManager.unitUpgrade(1) } },
+    { name: "Base Speed", desc: "Increases base movespeed speed", callback: function () { idleManager.unitUpgrade(2) } },
+    { name: "Resource Limit", desc: "Increases total number of resources", callback: function () { idleManager.unitUpgrade(3) } },
+    { name: "Resource Purity", desc: "Increases resources per node", callback: function () { idleManager.unitUpgrade(4) } },
 ]
