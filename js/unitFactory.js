@@ -20,11 +20,11 @@ class UnitFactory{
         let unit;
         if (group != null){
             unit = new group.Sprite();
-            unit.image = "Assets/Images/gatherfella.png";
+            unit.image = gathererImg;
         }
         else{
             unit = new Sprite();
-            unit.image = "Assets/Images/gatherfella.png";
+            unit.image = gathererImg;
         }
         unit.x = windowWidth/2;
         unit.y = windowHeight/2;
@@ -45,11 +45,11 @@ class UnitFactory{
         let unit;
         if (group != null){
             unit = new group.Sprite();
-            unit.image = "Assets/Images/GemGeode.png";
+            unit.image = gemImg;
         }
         else{
             unit = new Sprite();
-            unit.image = "Assets/Images/GemGeode.png";
+            unit.image = gemImg;
         }
         unit.x = random(windowWidth - 30);
         unit.y = -20;
@@ -65,7 +65,7 @@ class UnitFactory{
 
     makeBase(){
         let unit = new Sprite();
-        unit.image = "Assets/IMages/CombatTankPlayer.png";
+        unit.image = baseImg;
         unit.x = windowWidth/2;
         unit.y = windowHeight/2;
         unit.d = 50;

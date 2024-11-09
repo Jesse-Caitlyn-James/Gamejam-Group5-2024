@@ -1,5 +1,5 @@
 class IdleManager {
-    constructor() {
+    constructor(bgImg) {
         this.shopManager = new ShopManager();
 
         this.idleSprites = new Group();
@@ -23,7 +23,7 @@ class IdleManager {
         this.upgradeCosts = [10, 10, 10, 10, 10];
 
         this.bgPos = -100;
-        this.bgImg = loadImage("../Assets/Images/groundtexture100x100.png");
+        this.bgImg = bgImg;
 
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer: OIL$" + this.gathererCost, this.createResourceGatherer);

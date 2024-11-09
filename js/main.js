@@ -12,6 +12,17 @@ let sysColour = 10;
 let gameSpeed = 30;
 let gameState = 0;
 
+let bgImg;
+let gathererImg;
+let gemImg; 
+let baseImg;
+
+function preload(){
+    gathererImg = loadImage("../Assets/Images/gatherfella.png");
+    gemImg = loadImage("../Assets/Images/GemGeode.png");
+    baseImg = loadImage("../Assets/IMages/CombatTankPlayer.png");
+    bgImg = loadImage("../Assets/Images/groundtexture100x100.png");
+}
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
@@ -19,7 +30,7 @@ function setup(){
     buttonGroup = new Group();
 
     factory = new UnitFactory();
-    idleManager = new IdleManager();
+    idleManager = new IdleManager(bgImg);
     
     darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
     darkModeButton.sprite.textSize = 30;
