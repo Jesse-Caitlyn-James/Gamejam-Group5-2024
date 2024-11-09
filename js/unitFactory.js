@@ -20,9 +20,11 @@ class UnitFactory{
         let unit;
         if (group != null){
             unit = new group.Sprite();
+            unit.image = "Assets/Images/gatherfella.png";
         }
         else{
             unit = new Sprite();
+            unit.image = "Assets/Images/gatherfella.png";
         }
         unit.x = windowWidth/2;
         unit.y = windowHeight/2;
@@ -42,9 +44,11 @@ class UnitFactory{
         let unit;
         if (group != null){
             unit = new group.Sprite();
+            unit.image = "Assets/Images/GemGeode.png";
         }
         else{
             unit = new Sprite();
+            unit.image = "Assets/Images/GemGeode.png";
         }
         unit.x = random(windowWidth - 30);
         unit.y = -20;
