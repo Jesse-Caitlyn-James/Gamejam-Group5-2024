@@ -34,7 +34,7 @@ function setup(){
     factory = new UnitFactory();
     idleManager = new IdleManager(bgImg);
     
-    darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
+    darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "☀", darkModeSwitch);
     darkModeButton.sprite.textSize = 30;
     gameStateButton = new GameButton(530, windowHeight - 50, 200, 80, "Battle", gameStateSwitch);
 }

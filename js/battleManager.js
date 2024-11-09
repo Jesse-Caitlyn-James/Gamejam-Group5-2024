@@ -6,7 +6,7 @@ class BattleManager{
 
         this.playerSpawn = new this.battleSprites.Sprite(25, windowHeight * 0.2, 50, 50);
         this.playerSpawn.team = "player";
-        this.playerSpawn.cash = 100;
+        this.playerSpawn.cash = 1000;
         this.playerSpawn.health = 100;
         this.playerSpawn.image = baseImg;
         this.playerSpawn.scale = 3;
@@ -62,7 +62,7 @@ class BattleManager{
 
         this.spriteLogic();
         this.projectileHandling();
-        if(frameCount % 30 == 0){
+        if(frameCount % 60 == 0){
             this.enemyLogic();
         }
 
