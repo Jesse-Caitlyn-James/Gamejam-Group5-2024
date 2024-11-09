@@ -10,14 +10,8 @@ let gameStateButton;
 
 let sysColour = 10;
 let gameSpeed = 30;
-let gameState = 2;
+let gameState = 0;
 
-// Preload Resources
-
-
-function preload(){
-    
-}
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
@@ -26,8 +20,6 @@ function setup(){
 
     factory = new UnitFactory();
     idleManager = new IdleManager();
-    menuManager = new MenuManager();
-    
     
     darkModeButton = new GameButton(windowWidth - 50, windowHeight - 50, 40, 40, "🌕", darkModeSwitch);
     darkModeButton.sprite.textSize = 30;
@@ -44,20 +36,7 @@ function draw(){
     
     switch (gameState){
         case 0:
-            menuManager.menuUpdate(sysColour);
-            menuManager.menuSprites.visible = true;
-            idleManager.idleSprites.visible = false;
-            idleManager.idleSprites.overlaps(allSprites);
-
-            if (battleManager != null){
-                battleManager.battleSprites.remove();
-            }
-            battleManager = null;
-            break;
-        case 1:
             idleManager.idleSprites.visible = true;
-            menuManager.menuSprites.visible = false;
-            menuManager.menuSprites.overlaps(allSprites);
             idleManager.upgradeManager.draw()
             
             if (battleManager != null){
@@ -65,8 +44,7 @@ function draw(){
             }
             battleManager = null;
             break;
-        case 2:
-            // We could just rebuild the whole battle class on every event
+        case 1:
             if (battleManager == null){
                 battleManager = new BattleManager();
             }
@@ -74,8 +52,6 @@ function draw(){
             battleManager.battleUpdate(sysColour);
             battleManager.battleSprites.visible = true;
 
-            menuManager.menuSprites.visible = false;
-            menuManager.menuSprites.overlaps(allSprites);
             idleManager.idleSprites.visible = false;
             idleManager.idleSprites.overlaps(allSprites);
             break;
@@ -120,11 +96,9 @@ function gameStateSwitch(){
     gameState++;
     
     // Change the > #num to add more pages - yes, jank, i know
-    if (gameState > 2){
+    if (gameState > 1){
         gameState = 0;
     }
 
     gameStateButton.sprite.text = gameState;
-    menuManager.pageState = 0;
 }
-// Look into https://p5js.org/examples/advanced-canvas-rendering-multiple-canvases/ for UI page

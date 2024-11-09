@@ -1,38 +1,41 @@
 class IdleManager {
     constructor() {
         this.shopManager = new ShopManager();
-        
+
         this.idleSprites = new Group();
         this.resourceGroup = new Group();
         this.resourceGathererGroup = new Group();
-        
+
         this.base = factory.makeBase();
         this.idleSprites.push(this.base);
-        
+
         this.startUp = false;
         // Remeber each second is 60 frames so Default: 30 = 1/2 sec, 60 = 1 sec
         this.gatherSpeed = 30;
         this.resources = [0, 0];
         this.resourceLimit = 20;
         this.spawnRate = 300;
-        
+
+        this.bgPos = -100;
+        this.bgImg = loadImage("../Assets/Images/groundtexture100x100.png");
+
         // UI buttons gettin made
         this.gathererButton = new GameButton(110, windowHeight - 50, 200, 80, "Gatherer", this.createResourceGatherer);
         this.upgradeManager = new UpgradeManager(upgrades)
     }
-    
+
     createResourceGatherer() {
         let unit = factory.makeUnit("gatherer", idleManager.resourceGathererGroup);
         idleManager.idleSprites.push(unit);
     }
-    
+
     createResource() {
         let unit = factory.makeUnit("resource", idleManager.resourceGroup);
         this.idleSprites.push(unit);
     }
-    
+
     checkResources() {
-        if(!this.startUp){
+        if (!this.startUp) {
             this.startUp = true;
             for (let i = 0; i < this.resourceLimit; i++) {
                 this.createResource();
@@ -40,14 +43,16 @@ class IdleManager {
             }
         }
 
-        if (this.resourceGroup.length < this.resourceLimit){
-            if (frameCount % this.spawnRate == 0){
+        if (this.resourceGroup.length < this.resourceLimit) {
+            if (frameCount % this.spawnRate == 0) {
                 this.createResource();
             }
         }
     }
 
     idleUpdate() {
+        this.runBackground();
+
         // Following is the target and gatherer movement code
         this.moveGatherers();
         this.moveWorld();
@@ -60,20 +65,20 @@ class IdleManager {
     }
 
     moveGatherers() {
-        for(let i = 0; i < this.resourceGathererGroup.length; i++){
+        for (let i = 0; i < this.resourceGathererGroup.length; i++) {
             let gatherer = this.resourceGathererGroup[i];
 
             this.findTarget(gatherer);
-            
-            if(gatherer.target == this.base){
-                if(gatherer.collides(this.base)){
+
+            if (gatherer.target == this.base) {
+                if (gatherer.collides(this.base)) {
                     this.resources[gatherer.cargo]++;
                     gatherer.cargo = null;
                     gatherer.mined = 0;
                 }
             }
-            
-            if (gatherer.oldTarget != null && gatherer.oldTarget.health <= 0){
+
+            if (gatherer.oldTarget != null && gatherer.oldTarget.health <= 0) {
                 gatherer.target = null;
                 this.findTarget(gatherer);
             } else {
@@ -81,22 +86,22 @@ class IdleManager {
             }
 
             gatherer.moveTowards(gatherer.target, 0.01);
-            gatherer.rotation = gatherer.direction;
+            gatherer.rotation = gatherer.direction + 90;
         }
     }
 
-    findTarget(gatherer){
-        if(gatherer.target == null || gatherer.cargo != null){
-            if(gatherer.cargo != null){
+    findTarget(gatherer) {
+        if (gatherer.target == null || gatherer.cargo != null) {
+            if (gatherer.cargo != null) {
                 gatherer.target = this.base;
-            }else{
+            } else {
                 let resourceList = [];
-                for (let j = 0; j < this.resourceGroup.length; j++){
-                    if (this.resourceGroup[j].y > 0){
+                for (let j = 0; j < this.resourceGroup.length; j++) {
+                    if (this.resourceGroup[j].y > 0) {
                         resourceList.push(this.resourceGroup[j]);
                     }
                 }
-                if (resourceList.length > 0){
+                if (resourceList.length > 0) {
                     gatherer.target = resourceList[Math.floor(random(resourceList.length))];
                     gatherer.oldTarget = gatherer.target;
                 } else {
@@ -106,24 +111,24 @@ class IdleManager {
         }
     }
 
-    moveWorld(){
-        if (frameCount % 30 == 0){
+    moveWorld() {
+        if (frameCount % 30 == 0) {
             this.resourceGroup.vel.y = this.base.travelSpeed;
         }
 
-        for (let i = 0; i < this.resourceGroup.length; i++){
+        for (let i = 0; i < this.resourceGroup.length; i++) {
             let resource = this.resourceGroup[i];
-            if(resource.y > windowHeight - 100 - resource.h/2){
+            if (resource.y > windowHeight - 100 - resource.h / 2) {
                 resource.remove();
             }
 
-            if(resource.overlaps(this.base)){
+            if (resource.overlaps(this.base)) {
                 resource.remove();
             }
         }
 
-        for (let i = 0; i < this.resourceGathererGroup.length; i++){
-            if(this.resourceGathererGroup[i].y > windowHeight - 100 - this.resourceGathererGroup[i].h/2){
+        for (let i = 0; i < this.resourceGathererGroup.length; i++) {
+            if (this.resourceGathererGroup[i].y > windowHeight - 100 - this.resourceGathererGroup[i].h / 2) {
                 this.resourceGathererGroup[i].target = null;
             }
         }
@@ -140,16 +145,16 @@ class IdleManager {
                     let gatherDist = dist(resource.x, resource.y, gatherer.x, gatherer.y);
 
                     if (gatherDist < resource.w + 20 && gatherer.target == resource) {
-                        
-                        let laser = new Sprite([[gatherer.x, gatherer.y], [random(resource.x-10, resource.x+10), random(resource.y-10, resource.y+10)]]);
+
+                        let laser = new Sprite([[gatherer.x, gatherer.y], [random(resource.x - 10, resource.x + 10), random(resource.y - 10, resource.y + 10)]]);
                         this.idleSprites.push(laser);
                         laser.overlaps(allSprites);
                         laser.life = 10;
-                        
+
                         resource.health--;
                         gatherer.mined++;
-                        
-                        if (gatherer.mined >= gatherer.mineEfficiency){
+
+                        if (gatherer.mined >= gatherer.mineEfficiency) {
                             gatherer.cargo = resource.type;
                         }
 
@@ -157,24 +162,24 @@ class IdleManager {
                             resource.life = 0;
                         }
                     }
-                } 
+                }
             }
         }
     }
 
-    clickHarvest(){
-        if(mouse.presses()){
-            for(let i = 0; i < this.resourceGroup.length; i++){
+    clickHarvest() {
+        if (mouse.presses()) {
+            for (let i = 0; i < this.resourceGroup.length; i++) {
                 let resource = this.resourceGroup[i];
-                if(mouse.x > resource.x - resource.w/2 && mouse.x < resource.x + resource.w/2 && mouse.y > resource.y - resource.h/2 && mouse.y < resource.y + resource.h/2){
+                if (mouse.x > resource.x - resource.w / 2 && mouse.x < resource.x + resource.w / 2 && mouse.y > resource.y - resource.h / 2 && mouse.y < resource.y + resource.h / 2) {
                     resource.health--;
 
-                    let laser = new Sprite([[this.base.x, this.base.y], [random(mouse.x-10, mouse.x+10), random(mouse.y-10, mouse.y+10)]]);
+                    let laser = new Sprite([[this.base.x, this.base.y], [random(mouse.x - 10, mouse.x + 10), random(mouse.y - 10, mouse.y + 10)]]);
                     this.idleSprites.push(laser);
                     laser.overlaps(allSprites);
                     laser.life = 10;
 
-                    if(resource.health == 0){
+                    if (resource.health == 0) {
                         this.resources[resource.type]++;
                         resource.remove();
                     }
@@ -182,20 +187,33 @@ class IdleManager {
             }
         }
     }
+
+    runBackground() {
+        for (let i = 0; i < windowWidth; i += 46) {
+            for (let j = this.bgPos; j < windowHeight; j += 46) {
+                image(this.bgImg, i, j);
+            }
+        }
+
+        this.bgPos += this.base.travelSpeed;
+        if(this.bgPos >= 0){
+            this.bgPos = -50;
+        }
+    }
 }
 
 class UpgradeManager {
-    constructor(upgrades){
+    constructor(upgrades) {
         this.upgrades = upgrades
         this.state = 0
         this.openBtn = new GameButton(320, windowHeight - 50, 200, 80, "Upgrades", () => {
-            if(this.state >= 1){
+            if (this.state >= 1) {
                 this.state = 0
             } else this.state = 1
         })
     }
 
-    draw(){
+    draw() {
         switch (this.state) {
             case 0:
                 break;
@@ -206,30 +224,33 @@ class UpgradeManager {
         }
     }
 
-    drawBaseWindow(){
-        fill(255,255,255, 180)
+    drawBaseWindow() {
+        fill(255, 255, 255, 180)
         rect(0, windowHeight - 200, windowWidth, 100)
     }
 
-    drawUpgradeList(){
+    drawUpgradeList() {
         let btnW = 150
         let btnH = 50
         let x = 50
         let y = windowHeight - 175
+        textAlign(LEFT, TOP);
 
-        for(let i of this.upgrades){
+        for (let i of this.upgrades) {
             fill(100, 100, 100)
             rect(x, y, btnW, btnH)
             fill(255, 255, 255)
-            textSize(32)
-            text(i.name,x,y)
+            textSize(25)
+            text(i.name, x, y)
             x += btnW + 50
         }
-        fill(sysColour+50)
+        fill(sysColour + 50)
     }
+
+
 }
 
 upgrades = [
-    {name: "collect speed", desc: "Increases unit gathering speed", callback: function(){}},
-    {name: "unit speed", desc: "Increases unit movespeed speed", callback: function(){}},
+    { name: "collect speed", desc: "Increases unit gathering speed", callback: function () { } },
+    { name: "unit speed", desc: "Increases unit movespeed speed", callback: function () { } },
 ]
