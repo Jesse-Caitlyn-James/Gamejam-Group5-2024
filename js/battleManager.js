@@ -6,7 +6,7 @@ class BattleManager{
 
         this.playerSpawn = new this.battleSprites.Sprite(25, windowHeight * 0.2, 50, 50);
         this.playerSpawn.team = "player";
-        this.playerSpawn.cash = 1000;
+        this.playerSpawn.cash = 200;
         this.playerSpawn.health = 100;
         this.playerSpawn.image = baseImg;
         this.playerSpawn.scale = 3;
@@ -126,7 +126,8 @@ class BattleManager{
                 }
                 
                 if(unit == this.enemySpawn){
-                    idleManager.resources[1] += 100;
+                    idleManager.resources[1] += 50;
+                    idleManager.resources[0] += 50;
                     gameState = 0;
                     gameStateButton.sprite.text = "Battle";
                 }
