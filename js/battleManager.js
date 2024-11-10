@@ -85,17 +85,17 @@ class BattleManager{
 
                 let fightDist = dist(unit.x, unit.y, otherUnit.x, otherUnit.y);
                 if(fightDist <= unit.range && otherUnit.team != unit.team && unit.target == null){
-
                     unit.target = otherUnit;
                 }
 
                 if(unit.target != null){
                     if(unit.target.health > 0){
-                        if(frameCount % unit.cooldown == 0 && unit.target == otherUnit){
+                        if(unit.fireTime >= unit.cooldown && unit.target == otherUnit){
                             this.createProjectile(unit, otherUnit);
-                            unit.vel.x = 0;
-                            unit.vel.y = 0;
+                            unit.fireTime = 0;
                         }
+                        unit.vel.x = 0;
+                        unit.vel.y = 0;
                     } else {
                         unit.target = null;
                     }
@@ -119,20 +119,21 @@ class BattleManager{
                 } else {
                     this.playerSpawn.cash += 5;
                 }
-
+                
                 if(unit == this.playerSpawn){
                     gameState = 0;
                     gameStateButton.sprite.text = "Battle";
                 }
-
+                
                 if(unit == this.enemySpawn){
                     idleManager.resources[1] += 100;
                     gameState = 0;
                     gameStateButton.sprite.text = "Battle";
                 }
-
+                
                 unit.remove();
             }
+            unit.fireTime++;
         }
     }
 
@@ -210,13 +211,14 @@ class BattleManager{
         }
         unit.range = 75;
         unit.team = team;
-        unit.moveSpeed = 0.3;
+        unit.moveSpeed = 0.9;
         unit.health = 25;
         unit.damage = 5;
         unit.cooldown = 90;
         unit.target = null;
         unit.image = gathererImg;
         unit.scale = 2;
+        unit.fireTime = 0;
     }
 
     // Ranged
@@ -243,13 +245,14 @@ class BattleManager{
         }
         unit.range = 200;
         unit.team = team;
-        unit.moveSpeed = 0.5;
+        unit.moveSpeed = 1.5;
         unit.health = 15;
         unit.damage = 15;
         unit.cooldown = 180;
         unit.target = null;
         unit.image = gathererImg;
         unit.scale = 1.5;
+        unit.fireTime = 0;
     }
 
     // Tank
@@ -276,13 +279,14 @@ class BattleManager{
         }
         unit.range = 100;
         unit.team = team;
-        unit.moveSpeed = 0.1;
+        unit.moveSpeed = 0.3;
         unit.health = 50;
         unit.damage = 10;
         unit.cooldown = 120;
         unit.target = null;
         unit.image = gathererImg;
         unit.scale = 3;
+        unit.fireTime = 0;
     }
 
     createProjectile(parent, target){
